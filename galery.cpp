@@ -6,24 +6,24 @@
 #include <string>
 #include <vector>
 #include <iomanip>
+#include <fstream>
 
 std::mutex g_lockprint;
 constexpr int no_of_visitors = 50;
 std::vector<int> business = { 0, 0, 0, 0, 0 };
 
-struct image
+struct Image
 {
     int numb;
     std::mutex mutex;
 };
 
-struct galery
+struct Galery
 {
-    std::atomic<bool> ready{ false };
-    std::array<image, no_of_visitors> images;
+    std::array<image, 5> images;
 };
 
-struct visitor
+struct Visitor
 {
 private:
     std::string name;
@@ -36,25 +36,15 @@ private:
     std::thread  lifethread;
 
 public:
-    visitor(std::string_view n, galery const &g, image& im1, image& im2, image& im3, image& im4, image& im5) :
+    Visitor(std::string_view n, galery const &g, image& im1, image& im2, image& im3, image& im4, image& im5) :
         name(n), imagegalery(g), image1(im1), image2(im2), image3(im3), 
-        image4(im4), image5(im5), lifethread(&visitor::startwatching, this)
+        image4(im4), image5(im5), lifethread(&visitor::watch, this)
     {
     }
 
-    ~visitor()
+    ~Visitor()
     {
         lifethread.join();
-    }
-
-    void startwatching()
-    {
-        while (!imagegalery.ready);
-
-        do
-        {
-            watch();
-        } while (imagegalery.ready);
     }
 
     void print(std::string_view text, int numb)
@@ -128,7 +118,7 @@ public:
     }
 };
 
-int main()
+int main(int argc, char* argv[])
 {
     galery galery;
 
@@ -197,10 +187,6 @@ int main()
           { "Visitor 50", galery, galery.images[4], galery.images[0], galery.images[1], galery.images[2], galery.images[3] },
        }
     };
-
-    galery.ready = true;
-    std::this_thread::sleep_for(std::chrono::seconds(5));
-    galery.ready = false;
 
     return 0;
 }
