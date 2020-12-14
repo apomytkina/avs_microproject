@@ -6,9 +6,7 @@
 #include <string>
 #include <vector>
 #include <iomanip>
-#include <fstream>
 
-std::ofstream _file;
 std::mutex g_lockprint;
 constexpr int no_of_visitors = 50;
 std::vector<int> business = { 0, 0, 0, 0, 0 };
@@ -130,7 +128,7 @@ public:
     }
 };
 
-int main(int argc, char* argv[])
+int main()
 {
     galery galery;
 
@@ -139,8 +137,6 @@ int main(int argc, char* argv[])
     galery.images[2].numb = 3;
     galery.images[3].numb = 4;
     galery.images[4].numb = 5;
-
-    //_file.open(argv[1]);
 
     std::array<visitor, no_of_visitors> visitors
     {
