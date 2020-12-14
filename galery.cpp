@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <iomanip>
+#include <string_view>
 
 std::mutex g_lockprint;
 constexpr int no_of_visitors = 50;
@@ -19,23 +20,23 @@ struct Image
 
 struct Galery
 {
-    std::array<image, 5> images;
+    std::array<Image, 5> images;
 };
 
 struct Visitor
 {
 private:
     std::string name;
-    galery const& imagegalery;
-    image& image1;
-    image& image2;
-    image& image3;
-    image& image4;
-    image& image5;
+    Galery const& imagegalery;
+    Image& image1;
+    Image& image2;
+    Image& image3;
+    Image& image4;
+    Image& image5;
     std::thread  lifethread;
 
 public:
-    Visitor(std::string_view n, galery const &g, image& im1, image& im2, image& im3, image& im4, image& im5) :
+    Visitor(std::string_view n, galery const &g, Image& im1, Image& im2, Image& im3, Image& im4, Image& im5) :
         name(n), imagegalery(g), image1(im1), image2(im2), image3(im3), 
         image4(im4), image5(im5), lifethread(&visitor::watch, this)
     {
@@ -119,7 +120,7 @@ public:
 
 int main(int argc, char* argv[])
 {
-    galery galery;
+    Galery galery;
 
     galery.images[0].numb = 1;
     galery.images[1].numb = 2;
@@ -127,7 +128,7 @@ int main(int argc, char* argv[])
     galery.images[3].numb = 4;
     galery.images[4].numb = 5;
 
-    std::array<visitor, no_of_visitors> visitors
+    std::array<Visitor, no_of_visitors> visitors
     {
        {
           { "Visitor 1", galery, galery.images[0], galery.images[1], galery.images[2], galery.images[3], galery.images[4] },
